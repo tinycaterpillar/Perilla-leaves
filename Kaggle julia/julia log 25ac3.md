@@ -1,10 +1,10 @@
-# READ
+# julia log
 
 # 결과
 
-![해냈다!!.png](READ%2025ac3/%ED%95%B4%EB%83%88%EB%8B%A4!!.png)
+![해냈다!!.png](julia%20log%2025ac3/%ED%95%B4%EB%83%88%EB%8B%A4!!.png)
 
-![요정도에 있을듯.png](READ%2025ac3/%EC%9A%94%EC%A0%95%EB%8F%84%EC%97%90_%EC%9E%88%EC%9D%84%EB%93%AF.png)
+![요정도에 있을듯.png](julia%20log%2025ac3/%EC%9A%94%EC%A0%95%EB%8F%84%EC%97%90_%EC%9E%88%EC%9D%84%EB%93%AF.png)
 
 리더보드 17 등 정도의 성능이 나왔다
 

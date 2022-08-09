@@ -1,0 +1,12 @@
+Model
+model file name : main_lstm
+
+Used data
+data directory : interval-5, Standarzation
+data path : /content/drive/MyDrive/Colab Notebooks/2022 Inha challenge/data/interval-5, Standarzation
+
+hyperparam
+learning_rate : 0.001
+batch_size : 32
+num_layers : 2
+

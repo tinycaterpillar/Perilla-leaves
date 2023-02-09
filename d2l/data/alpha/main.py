@@ -1,8 +1,8 @@
-from torch import nn, optim, from_numpy, cuda
+from torch import nn, cuda
 import torch
 import torch.nn.functional as F
 import os
-
+import pathlib
 
 class Net(nn.Module):
     def __init__(self):
@@ -14,7 +14,10 @@ class Net(nn.Module):
         x = F.relu(self.l1(x))
         return self.l2(x)
 
-if __name__ == '__main__':
-    directory = str(os.getcwd())
-    model = Net()
-    model.load_state_dict(torch.load(directory + "/weight.pth"))
+device = "cuda" if cuda.is_available() else "cpu"
+cur_path = str(pathlib.Path(__file__).parent.resolve())
+model = Net()
+model.to(device)
+
+model.load_state_dict(torch.load(cur_path + "/weight.pth", map_location=device))
+print("load weight complete")

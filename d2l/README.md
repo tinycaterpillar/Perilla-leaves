@@ -2,4 +2,4 @@
 ![Github_Logo](./image/general.png)  
 ![Github_Logo](./image/sample2.png)
 ![Github_Logo](./image/regression2.png)
-![Github_Logo](./gif/FuncAni1.gif)
+![Github_Logo](./gif/sample.gif)

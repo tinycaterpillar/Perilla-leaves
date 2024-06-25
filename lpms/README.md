@@ -6,3 +6,4 @@
 ![ex_screenshot](impact_vs_not_impact.png)
 
 시연 영상
+![Alt Text](simul.gif)

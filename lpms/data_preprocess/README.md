@@ -28,7 +28,7 @@ image/
 ├─ not_impact/   
 │  ├─ HB5_LPMS_False Alarm/   
 │  │  ├─ sub_direct1/   
-│  │  │  ├─ file2/   
+│  │  │  ├─ file1/   
 │  │  │  │  ├─ V-102.png   
 │  │  │  │  ├─ v-101.png   
 │  │  ├─ sub_direct2/   
@@ -36,14 +36,13 @@ image/
 │  │  │  │  ├─ V-102.png   
 │  │  │  │  ├─ v-101.png   
 
-```flattening_directory.py```: 동작은 아래 예시를 참고하세요. image 폴더를 data라는 폴더로 복사하여 directory 구조와 파일명을 변형합니다. pytorch의 ImageFolder를 이용하기 위함입니다.
+```flattening_directory.py```: 동작은 아래 예시를 참고하세요. image 폴더를 data라는 폴더로 복사하여 directory 구조와 파일명을 변형합니다.
 
 data/   
 ├─ impact/   
-│  ├─ 1.png   
-│  ├─ 2.png   
+│  ├─ HB5_LPMS_Impact_Test_sub_direct3_file3_V-101.png   
+│  ├─ HB5_LPMS_Impact_Test_sub_direct3_file3_V-102.png   
 ├─ not_impact/   
-│  ├─ 3.png   
-│  ├─ 4.png   
+│  ├─ HB5_LPMS_False_Alarm_sub_direct1_file1_V-102.png
 
 그외의 jupyter노트북은 위 프로그램을 짤때 사용했던 연습장입니다.

@@ -4,3 +4,5 @@
 
 신호를 stft(short time fourier transform) 변환시 충격/비충격 데이터를 분류할 수 있습니다. 이를 ai를 활용하여 자동화 하였습니다. 
 ![ex_screenshot](impact_vs_not_impact.png)
+
+시연 영상

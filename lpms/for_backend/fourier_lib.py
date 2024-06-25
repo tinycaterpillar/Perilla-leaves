@@ -7,6 +7,11 @@ import matplotlib.cm as cm
 from scipy.fft import fft, fftfreq
 from torchvision import transforms
 from PIL import Image
+import pandas as pd
+import torch.nn as nn
+from torchvision.models import resnet18
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+import torch
 
 class Fourier_obj:
     def __init__(self, val: list, dt: int, fs: int, nFFT: int):
@@ -49,9 +54,13 @@ class Fourier_obj:
         colors = ['#000000', '#c20078', '#0343df', '#00ffff', '#15b01a', '#ffff14', '#fe420f', '#e50000', '#ffffff']
         self.norm = plt.Normalize(colorMin, colorMax)
         self.cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", colors)
-        self.levels = [0, colorMin]
-        for i in range(1, 8): self.levels.append(colorMin + i * (colorMax - colorMin) / 9)
-        self.levels.append(colorMax)
+        self.levels = [colorMin]
+        for i in range(1, 8):
+            tmp = colorMin + i * (colorMax - colorMin) / 9
+            if self.levels[-1] != tmp: self.levels.append(tmp)
+        if self.levels[-1] != colorMax: self.levels.append(colorMax)
+        if self.levels[0] != 0: self.levels.insert(0, 0)
+        if len(self.levels) == 1: self.levels.append(1)
         self.colormapping = cm.ScalarMappable(norm=self.norm, cmap=self.cmap)
 
     # Extract FrameSize number of elements around the point where the absolute value is greatest in val
@@ -92,7 +101,7 @@ class Fourier_obj:
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
-        ret = transform(ret).unsqueeze(0)
+        ret = transform(ret)
         return ret
 
     def fft(self, fft_file_name="fft", ub=25000):
@@ -149,5 +158,70 @@ class Fourier_obj:
         else:
             plt.show()
 
-    
-        
+
+def load_data(data_path: str):
+    df = pd.read_csv(data_path)
+    # V-* 인 칼럼만 사용
+    df = df[df.columns[df.columns.str.contains('V-')]]
+
+    # 0일 칼럼 제거
+    column_sums = df.sum()
+    nonzero_columns = column_sums[column_sums != 0].index
+
+    # 조건을 만족하는 열들만 선택하여 새로운 데이터프레임 생성
+    df = df[nonzero_columns]
+    return df
+
+def get_model():
+    class CNNRNNModel(nn.Module):
+        def __init__(self, rnn_hidden_size, num_classes):
+            super(CNNRNNModel, self).__init__()
+            
+            # Pretrained ResNet-18 모델을 사용하여 CNN 구성
+            cnn_model = resnet18()
+            layers = list(cnn_model.children())[:-1]  # 마지막 레이어 제거
+            self.cnn = nn.Sequential(*layers)
+            
+            # LSTM 설정: input_size는 CNN의 출력 크기
+            self.rnn = nn.LSTM(input_size=512, hidden_size=rnn_hidden_size, batch_first=True)
+            
+            # Fully Connected Layer 설정
+            self.fc = nn.Linear(rnn_hidden_size, num_classes)
+            self.sigmoid = nn.Sigmoid()  # Sigmoid 활성화 함수 추가
+            
+        def forward(self, x, lengths):
+            # x의 크기: (batch_size, seq_len, c, h, w)
+            batch_size, seq_len, c, h, w = x.size()
+            
+            # CNN을 적용하기 위해 크기를 변환: (batch_size * seq_len, c, h, w)
+            c_in = x.view(batch_size * seq_len, c, h, w)
+            
+            # CNN 적용: (batch_size * seq_len, 512, 1, 1)
+            c_out = self.cnn(c_in)
+            
+            # RNN의 입력으로 사용하기 위해 크기를 변환: (batch_size, seq_len, 512*7*7)
+            r_in = c_out.view(batch_size, seq_len, -1)
+            
+            # 시퀀스 길이에 따라 패킹
+            packed_input = pack_padded_sequence(r_in, lengths, batch_first=True, enforce_sorted=False)
+            
+            # LSTM 적용
+            packed_output, (h_n, c_n) = self.rnn(packed_input)
+
+            # 패킹 해제
+            r_out, _ = pad_packed_sequence(packed_output, batch_first=True)
+            r_out = r_out[range(r_out.shape[0]), lengths - 1, :]
+            
+            r_out = self.fc(r_out)
+
+            # Sigmoid 활성화 함수 적용
+            out = self.sigmoid(r_out)
+            
+            return out
+
+    # 모델 설정
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = CNNRNNModel(rnn_hidden_size=64, num_classes=1)  # 이진 분류의 경우 num_classes=1
+    model = model.to(device)
+
+    return model

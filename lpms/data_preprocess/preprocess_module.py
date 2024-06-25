@@ -130,33 +130,9 @@ def copy_folder(src_folder: str, dst_folder: str):
         shutil.copytree(src_folder, dst_folder)
 
 
-def rename_subfolders(root_dir):
-    ret = dd(str)
-
-    # 루트 디렉토리 탐색
-    serial = 0
-    for root, dirs, files in os.walk(root_dir, topdown=False):
-        for name in files:
-            serial += 1
-            
-            _, extension = os.path.splitext(name)
-            old_path = os.path.join(root, name)
-            ret[serial] = old_path
-            new_path = os.path.join(root, str(serial)+extension)
-            os.rename(old_path, new_path)
-    return ret
-
-
-# remove_subfolders("image/not_impact")
 def remove_subfolders(root_dir):
     # 루트 디렉토리 탐색
     for root, dirs, files in os.walk(root_dir, topdown=False):
-        for name in files:
-            # 파일을 상위 디렉토리로 이동
-            file_path = os.path.join(root, name)
-            new_path = os.path.join(root_dir, name)
-            shutil.move(file_path, new_path)
-
         # 빈 폴더 삭제
         for name in dirs:
             dir_path = os.path.join(root, name)
@@ -170,6 +146,16 @@ def flatten_subfolders(root_dir):
     if not os.path.exists(root_dir):
         raise FileNotFoundError(f"Data directory {root_dir} does not exist.")
 
-    ori_name = rename_subfolders(root_dir)
-    for c in glob(f"{root_dir}/**"): remove_subfolders(c)
+    # 루트 디렉토리 탐색
+    for root, dirs, files in os.walk(root_dir, topdown=False):
+        for name in files:
+            file_path = os.path.join(root, name)
 
+            _, extension = os.path.splitext(name)
+            tmp = root.split('\\')
+            new_dir = "_".join(tmp[2:]).replace(" ", "_")
+            new_path = os.path.join(tmp[0], tmp[1], new_dir)
+            os.makedirs(new_path, exist_ok=True)
+            shutil.move(file_path, new_path)
+
+    remove_subfolders(root_dir)

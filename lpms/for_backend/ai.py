@@ -1,9 +1,6 @@
 import sys
-import fourier_lib as lib
-import sys
 import torch
-import torch.nn as nn
-from torchvision.models import resnet18
+import fourier_lib as lib
 
 # data config
 N = 20000
@@ -15,26 +12,34 @@ ub = 25000
 nFFT = 128
 
 # input
-weights_path = input().strip()
-val = list(map(float, sys.stdin.readline().strip().split(',')))
-# with open("input_sample_ai.txt", 'r') as f:
-#     weights_path = f.readline().strip()
-#     val = list(map(float, f.readline().split(',')))
-if len(val) != N: raise RuntimeError(f"input data size is not {N}")
+# weights_path = input().strip()
+# data_path = input().strip()
+with open("input_sample_ai.txt", 'r') as f:
+    weights_path = f.readline().strip()
+    data_path = f.readline().strip()
 
-obj = lib.Fourier_obj(val=val, dt=dt, fs=fs, nFFT=nFFT)
+df = lib.load_data(data_path)
+ai_input = []
+lengths = [len(df.columns)]
+for c in df.columns:
+    obj = lib.Fourier_obj(val=df[c][:N], dt=dt, fs=fs, nFFT=nFFT)
+    ai_input.append(obj.get_verdict_data())
+
+while len(ai_input) < 18:
+    ai_input.append(torch.zeros((3, 300, 300)))
+ai_input = torch.stack(ai_input).unsqueeze(0)
+lengths = torch.tensor(lengths)
 
 # AI
-model = resnet18()
-model.fc = nn.Sequential(nn.Linear(model.fc.in_features, 1), nn.Sigmoid())
+model = lib.get_model()
 
 # Load weights into the model
 model.load_state_dict(torch.load(weights_path, map_location='cpu'))
 
-image = obj.get_verdict_data()
 model.eval()
 with torch.no_grad():
-    outputs = model(image)
+    outputs = model(ai_input, lengths)
+    outputs = 1 - outputs
     output = torch.round(outputs) == 1
 prob = outputs.item()
 print(output.item(), f"{prob:.10f}")

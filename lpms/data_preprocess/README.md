@@ -40,12 +40,12 @@ image/
 
 data/   
 ├─ impact/   
-│  ├─ HB5_LPMS_Impact_Test_sub_direct3_file3
-│  │   ├─ V-101.png   
-│  │   ├─ V-102.png
+│  ├─ HB5_LPMS_Impact_Test_sub_direct3_file3   
+│  │   ├─ V-101.png      
+│  │   ├─ V-102.png   
 ├─ not_impact/   
-│  ├─ HB5_LPMS_False_Alarm_sub_direct1_file1
-│  │   ├─ V-102.png
-│  │   ├─ V-101.png
+│  ├─ HB5_LPMS_False_Alarm_sub_direct1_file1   
+│  │   ├─ V-102.png   
+│  │   ├─ V-101.png   
 
 그외의 jupyter노트북은 위 프로그램을 짤때 사용했던 연습장입니다.

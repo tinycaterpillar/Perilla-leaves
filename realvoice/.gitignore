@@ -1,0 +1,7 @@
+test/*
+too_short/
+train/
+train_two_voice/
+unlabeled_data/
+validate/
+validate_two_voice/

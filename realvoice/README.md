@@ -11,6 +11,19 @@ https://dacon.io/competitions/official/236253/overview/description
 모델에서 (1)과 관련된 feature는 CNN을 통해, (2)와 관련된 feature는 RNN을 통해 학습합니다.
 (1)과 (2)의 feature vector를 이어붙이고(concate) 이를 분류기(MLP)에 넣어 최종 결과를 내놓습니다.
 
+# 전처리
+1초 이하인 음성 파일은 제외하고, 다음과 같은 데이터를 사용하였습니다.
+== 제공됨 ==
+1. fake 목소리
+2. real 목소리
+== 만듬 ==
+3. fake-fake 합성 음성
+4. fake-real 합성 음성
+5. real-real 합성 음성
+6. unlabeled data에서의 노이즈 데이터
+7. 위에서 언급한 각 class에 노이즈를 합성한 음성파일
+※ 그러나 시간이 촉박하여 6의 대부분과 7번을 학습하지 못했습니다...
+
 # 후기
 대회의 성적이 너무 아쉬웠는데요, 정말 터무니 없는 성적을 내놓아서 이곳에 적기 부끄럽네요...  
 
